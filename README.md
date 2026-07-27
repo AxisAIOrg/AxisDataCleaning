@@ -57,7 +57,8 @@ pip install numpy scipy matplotlib
 pip install roboticstoolbox-python
 ```
 
-> If `roboticstoolbox` is not installed, all tools still work; they will automatically fall back to **joint‑space visualizations only**.
+> If `roboticstoolbox` is not installed, `smooth_resampled_traj.py` and the metrics tools still work — they automatically fall back to **joint‑space visualizations only**.
+> `visualize_trajectory.py` plots end‑effector space exclusively and therefore requires it.
 
 ---
 
@@ -415,7 +416,7 @@ python extra_json.py \
 A standalone script for **visualizing original vs smoothed trajectories** in 3D end‑effector space:
 
 - Loads two JSON trajectories (e.g. `trajectory.json` and `trajectory_smoothed.json`).
-- Uses `roboticstoolbox` Panda DH model for FK.
+- Uses `roboticstoolbox` Panda DH model for FK. **Required** — this script has no joint‑space fallback.
 - Renders:
   - Original trajectory: red dashed line + points.
   - Smoothed trajectory: color‑mapped line and points by time.
