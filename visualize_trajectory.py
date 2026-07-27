@@ -41,8 +41,7 @@ def load_trajectory_data(file_path):
 
 def compute_fk(q_matrix):
     """计算正运动学 (DH 模型)"""
-    try: panda = rtb.models.DH.Panda()
-    except: panda = rtb.models.DH.Panda() 
+    panda = rtb.models.DH.Panda()
     return panda.fkine(q_matrix).t
 
 def visualize_complete_comparison(orig_pos, smooth_pos, time_array):
