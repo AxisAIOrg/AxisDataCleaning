@@ -336,6 +336,10 @@ def resample_trajectory(times: np.ndarray, joint_data: dict, target_dt: float, j
     """三次样条重采样，夹爪做限位。返回 (new_times, resampled_joints)。"""
     t_start, t_end = float(times[0]), float(times[-1])
     new_times = np.arange(t_start, t_end, target_dt)
+    if new_times.size == 0 or not np.isclose(new_times[-1], t_end):
+        new_times = np.append(new_times, t_end)
+    else:
+        new_times[-1] = t_end
     resampled = {}
     for name in joint_names:
         cs = CubicSpline(times, joint_data[name], bc_type='natural')
@@ -687,7 +691,7 @@ def visualize_end_effector(
 ):
     """
     绘制轨迹优化前后的机器人末端位置对比图（3D）。
-    需要 7 轴臂关节与 roboticstoolbox；若不满足则退化为关节空间对比图。
+    需要 7 轴臂关节与 roboticstoolbox；若不满足则退化为关节空间图。
     show_interactive=True 时保存后不关闭窗口，并调用 plt.show() 以便旋转/拖动。
     """
     q_before = _get_arm_q_matrix(clean_joints, joint_names)
