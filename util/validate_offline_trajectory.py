@@ -75,15 +75,31 @@ def get_body_orientation(state: Dict, body_name: str) -> Optional[Tuple[float, f
 
 
 def get_joint_value(state: Dict, joint_name: str) -> Optional[float]:
+    # 1) robot_joints (arm joints)
     joints = state.get("robot_joints") or {}
     key = _find_state_key(joint_name, list(joints.keys()))
-    if key is None:
-        return None
-    v = joints[key]
-    try:
-        return float(v)
-    except (TypeError, ValueError):
-        return None
+    if key is not None:
+        try:
+            return float(joints[key])
+        except (TypeError, ValueError):
+            pass
+    # 2) object_positions (object/hinge joints; single value [angle] or [x, y, z], take first component)
+    positions = state.get("object_positions") or {}
+    key = _find_state_key(joint_name, list(positions.keys()))
+    if key is not None:
+        v = positions[key]
+        if isinstance(v, (list, tuple)):
+            if len(v) >= 1:
+                try:
+                    return float(v[0])
+                except (TypeError, ValueError):
+                    pass
+        else:
+            try:
+                return float(v)
+            except (TypeError, ValueError):
+                pass
+    return None
 
 
 def quat_apply_up(w: float, x: float, y: float, z: float) -> Tuple[float, float, float]:
