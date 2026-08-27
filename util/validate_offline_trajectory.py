@@ -28,6 +28,17 @@ import os
 import sys
 from typing import Any, Dict, List, Optional, Tuple
 
+# === parity checkers (PR-D) ===
+try:
+    from check_body_contact import check_body_contact
+    from check_position_delta import check_position_delta
+    from check_ordered_step import check_ordered_step
+except Exception:
+    check_body_contact = None
+    check_position_delta = None
+    check_ordered_step = None
+
+
 
 # ---------- 从 state 中按名称取位姿/关节 ----------
 
@@ -297,6 +308,14 @@ def run_checker(state: Dict, config: Dict) -> bool:
         return check_joint_threshold(state, opts)
     if t == "BoxJointPositionChecker":
         return check_box_joint_position(state, opts)
+    if t == "BodyContactChecker" and check_body_contact is not None:
+        return check_body_contact(state, opts)
+    if t == "PositionDeltaChecker" and check_position_delta is not None:
+        return check_position_delta(state, opts)
+    if t == "OrderedStepChecker" and check_ordered_step is not None:
+        # OrderedStepChecker 接受一个完整轨迹(steps 列表)而不是单 state;
+        # 调用方需把轨迹传入 state['_trajectory']。 若不存在则返回 False。
+        return check_ordered_step(state.get("_trajectory", [state]), opts)
     if t == "KeyPressSetChecker":
         return True
     # 未知类型视为不通过或可配置
