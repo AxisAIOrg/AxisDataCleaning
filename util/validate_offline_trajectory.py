@@ -310,6 +310,7 @@ def run_checker_config(state: Dict, checker_config: Dict) -> bool:
     if "checker" in checker_config:
         return run_checker(state, checker_config["checker"])
     # legacy: 多个 checker 用 AND
+    executed = False
     for key, cfg in checker_config.items():
         if not isinstance(cfg, dict) or cfg.get("enabled") is False:
             continue
@@ -318,9 +319,10 @@ def run_checker_config(state: Dict, checker_config: Dict) -> bool:
             continue
         c = dict(cfg)
         c["type"] = type_name
+        executed = True
         if not run_checker(state, c):
             return False
-    return True
+    return executed
 
 
 # ---------- 任务配置加载 ----------
